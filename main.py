@@ -32,7 +32,7 @@ def produtora_clientes() -> None:
     controle += 10
 
     i = 1 * controle
-    while True:
+    while i < 10*numero_clientes:
         print(f'O consumidor {i} acabou de chegar.')
         semaforo_faltantes.acquire()
         ocupacao_regiao_critica.acquire()
@@ -44,8 +44,6 @@ def produtora_clientes() -> None:
         semaforo_disponiveis_consumidor.release()
 
         i += 1
-        if i == numero_clientes:
-            break
 
 def consumidora_atendimento() -> None:
     """Função consumidora de modo que atende
