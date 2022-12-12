@@ -27,8 +27,8 @@ def threads_bombas(identificador) -> None:
 
 
 def produtora_clientes() -> None:
-    """ Função produtora por gerar numeros
-        aleatórios no programa. """
+    """ Função produtora por gerar clientes no sistema em
+    tempos não regulares"""
     for i in range(numero_clientes):
         print(f'O consumidor {i + 1} acabou de chegar.')
         clientes.append(i + 1)
