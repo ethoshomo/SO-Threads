@@ -10,7 +10,7 @@ numero_clientes = 8
 """Criação de semáforos"""
 semaforo_faltantes = Semaphore(numero_clientes)    # Processos que ainda faltam produzir
 semaforo_disponiveis_consumidor = Semaphore(0)   # Processos disponíveis ao consumidor
-ocupacao_regiao_critica = Semaphore(1)           # Trava de uso da região crítica.
+ocupacao_regiao_critica = Semaphore(numero_bombas)           # Trava de uso da região crítica.
 
 """Lista reservada para guardar os clientes"""
 clientes = []
