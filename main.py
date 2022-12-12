@@ -39,14 +39,19 @@ def produtora_clientes() -> None:
         clientes.append(i + 1)
         time.sleep(auxiliar_numeros_aleatorios(1, 3))
 
+def consumidora_atendimento() -> None:
+    return clientes.pop(0)
 
-def consumidora_abastecimento() -> bool:
+def regiao_critica_abastecimento() -> bool:
     """Função consumidora de modo que atende
     os interesses do cliente e o manda embora."""
-    atendimento = clientes.pop(0)
+
+    semaforo.acquire()
+    atendimento = consumidora_atendimento()
     print(f'O cliente {atendimento} está sendo atendido')
     time.sleep(auxiliar_numeros_aleatorios(4, 7))
     print(f'O cliente {atendimento} está finalizado.')
+    semaforo.release()
 
     if clientes.__sizeof__() == 0:
         return False
@@ -69,11 +74,7 @@ if __name__ == "__main__":
     time.sleep(5)
 
     while True:
-        semaforo.acquire()
-        resultado = consumidora_abastecimento()
-        semaforo.release()
-
-        if resultado == False:
+        if regiao_critica_abastecimento() == False:
             break
 
 
