@@ -3,14 +3,14 @@ from threading import *
 import random
 
 """Variáveis do Posto de Combustíveis"""
-controle = -9
-numero_bombas = 5
-numero_clientes = 8
+controle = -9           # É só para alterar a numeração de clientes em cada bloco.
+numero_bombas = 5       # Quantas threads poderão ser usadas
+numero_clientes = 8     # Quantos clientes são produzidos por blocos
 
 """Criação de semáforos"""
 semaforo_faltantes = Semaphore(numero_clientes)    # Processos que ainda faltam produzir
-semaforo_disponiveis_consumidor = Semaphore(0)   # Processos disponíveis ao consumidor
-ocupacao_regiao_critica = Semaphore(numero_bombas)           # Trava de uso da região crítica.
+semaforo_disponiveis_consumidor = Semaphore(0)     # Processos disponíveis ao consumidor
+ocupacao_regiao_critica = Semaphore(numero_bombas) # Trava de uso da região crítica.
 
 """Lista reservada para guardar os clientes"""
 clientes = []
