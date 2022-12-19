@@ -2,7 +2,7 @@
 Trabalho Final apresentado à disciplina de Sistemas Operacionais (SO) do curso de Ciência da Computação da Universidade de São Paulo (USP), a qual foi ministrada pelo docente Rodolfo Ipolito Meneguette. 
 
 # Grupo
-O trabalho foi realizado em grupo de quatro pessoas:
+O trabalho foi realizado em um grupo de quatro pessoas:
 * Carlos Filipe de Castro lemos
 * Gabriel Natal Coutinho
 * João Gabriel Sasseron Roberto Amorim
