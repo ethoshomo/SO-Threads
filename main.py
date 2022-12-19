@@ -2,12 +2,12 @@ import time
 from threading import Semaphore, Thread
 from curses import wrapper
 
-from draw import norm, render
+from draw import norm, render, make_block
 
 """Variáveis do Posto de Combustíveis"""
 controle = -9           # É só para alterar a numeração de clientes em cada bloco.
-numero_bombas = 5  # Quantas threads poderão ser usadas
-numero_clientes = 8  # Quantos clientes são produzidos por blocos
+numero_bombas = 9  # Quantas threads poderão ser usadas
+numero_clientes = 10  # Quantos clientes são produzidos por blocos
 
 """Criação de semáforos"""
 clientes_esperando = Semaphore(numero_clientes)  # Processos que ainda faltam produzir
@@ -34,7 +34,7 @@ def produtor() -> None:
         clientes_esperando.acquire()
         bombas_disponiveis.acquire()
 
-        time.sleep(abs(norm(2, 2)))
+        time.sleep(abs(norm(1, 2)))
         clientes += 1
 
         bombas_disponiveis.release()
@@ -65,6 +65,7 @@ def consumidor() -> None:
         bombas += 1
         clientes_finalizados += 1
 
+
 def draw(scr):
     render(scr, [(clientes, "Clientes Esperando"), (bombas, "Bombas Disponiveis"), (clientes_finalizados, "Clientes Finalizados")])
 
@@ -75,19 +76,31 @@ def main(scr):
     scr.erase()
 
     # Criando um objeto com um bloco de clientes
-    Thread(target=produtor).start()
+    Thread(target=produtor, daemon=True).start()
     time.sleep(3)
 
-    produtores = [Thread(target=produtor) for _ in range(3)]
-    consumidores = [Thread(target=consumidor) for _ in range(3)]
+    produtores = [Thread(target=produtor, daemon=True) for _ in range(3)]
+    consumidores = [Thread(target=consumidor, daemon=True) for _ in range(3)]
 
     for i in range(3):
         produtores[i].start()
         consumidores[i].start()
 
     while True:
-        draw(scr)
+        if clientes_finalizados >= 50:
+            return 0
+        try:
+            draw(scr)
+        except Exception:
+            return -1
 
 
 if __name__ == "__main__":
-    wrapper(main)
+    if wrapper(main) == -1:
+        print("Tamanho de Terminal insuficiente, por favor expanda a sua janela para visualizar o programa.")
+    else:
+        print("Total de clientes atendidos durante o expediente:", clientes_finalizados, end="\n\n")
+        print("Estado Final:\n")
+        print(make_block((clientes, "Clientes Esperando")))
+        print(make_block((bombas, "Bombas Disponiveis")))
+        print(make_block((clientes_finalizados, "Clientes Finalizados")))

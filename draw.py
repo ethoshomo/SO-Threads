@@ -1,4 +1,3 @@
-import time
 from random import random
 
 
@@ -21,33 +20,19 @@ def block_str(e, canvas_size):
     return block
 
 
+def make_block(val):
+    return f"{val[1]}:\n" + block_str(val[0], (5, int(val[0] / 5) + 2))
+
+
 def render(scr, vals):
     scr.erase()
 
     blocks = ""
 
     for val in vals:
-        blocks += f"{val[1]}:\n" + block_str(val[0], (5, 5))
+        blocks += f"{val[1]}:\n" + block_str(val[0], (5, int(val[0] / 5) + 2))
 
     for y, line in enumerate(blocks.split("\n")):
         scr.addstr(y, 0, line)
 
     scr.refresh()
-
-
-def main(scr):
-    a = 10
-    b = 15
-
-    for i in range(10):
-
-        changes = round(norm(std=2))
-        while changes >= a or -changes >= b:
-            changes = round(norm(std=2))
-
-        a -= changes
-        b += changes
-
-
-        time.sleep(1)
-    scr.getkey()
