@@ -5,8 +5,7 @@ from curses import wrapper
 from draw import norm, render, make_block
 
 """Variáveis do Posto de Combustíveis"""
-controle = -9           # É só para alterar a numeração de clientes em cada bloco.
-numero_bombas = 9  # Quantas threads poderão ser usadas
+numero_bombas = 5  # Quantas threads poderão ser usadas
 numero_clientes = 10  # Quantos clientes são produzidos por blocos
 
 """Criação de semáforos"""
@@ -21,52 +20,58 @@ bombas = numero_bombas
 
 
 def produtor() -> None:
-    """ Função produtora por gerar clientes no sistema em
-    tempos não regulares"""
-
-    global controle
+    """
+    Função produtora que incrementa a quantidade de clientes esperando por bombas para utilizarem ao longo do tempo.
+    É esperado que chegue um novo cliente de um em um segundo.
+    """
     global clientes
-    controle += 10
 
-    i = 1 * controle
-    while i < 10 * numero_clientes:
-        # print(f'O consumidor {i} acabou de chegar.')
+    while True:
         clientes_esperando.acquire()
         bombas_disponiveis.acquire()
 
-        time.sleep(abs(norm(1, 2)))
+        time.sleep(abs(norm(1, 2))) # Média de 1 segundo, com desvio padrão de 2 segundos
         clientes += 1
 
         bombas_disponiveis.release()
         clientes_abastecendo.release()
 
-        i += 1
-
 
 def consumidor() -> None:
-    """Função consumidora de modo que atende
-    os interesses do cliente e o manda embora."""
+    """
+    Função consumidora que atende uma lista de clientes, desde que haja uma quantidade de bombas livres
+    e cliente em espera maior que zero.
 
+    A função executa por tempo indefinido.
+    """
     global bombas
     global clientes
     global clientes_finalizados
 
     while True:
+
+        # Caso haja bombas disponíveis, entrar na zona crítica (de abastecimento)
+        # O tempo de abastecimento médio é em torno de 4s
         clientes_abastecendo.acquire()
         bombas_disponiveis.acquire()
 
         bombas -= 1
         clientes -= 1
-        time.sleep(abs(norm(1, 1)))
+        time.sleep(abs(norm(4, 1))) # Média de 4 segundos, com desvio padrão de 1 segundo
+
+        # Após a realização do abastecimento, liberar a bomba e contabilizar o cliente finalizado
+        clientes_finalizados += 1
+        bombas += 1
 
         bombas_disponiveis.release()
         clientes_esperando.release()
 
-        bombas += 1
-        clientes_finalizados += 1
-
 
 def draw(scr):
+    """
+    Desenha na tela usando o módulo Curses uma sequência de tabelas contendo a quantidade de clientes em espera,
+    bombas disponíveis e clientes já atendidos, em tempo real.
+    """
     render(scr, [(clientes, "Clientes Esperando"), (bombas, "Bombas Disponiveis"), (clientes_finalizados, "Clientes Finalizados")])
 
 
@@ -79,10 +84,11 @@ def main(scr):
     Thread(target=produtor, daemon=True).start()
     time.sleep(3)
 
-    produtores = [Thread(target=produtor, daemon=True) for _ in range(3)]
-    consumidores = [Thread(target=consumidor, daemon=True) for _ in range(3)]
+    produtores = [Thread(target=produtor, daemon=True) for _ in range(10)]
+    consumidores = [Thread(target=consumidor, daemon=True) for _ in range(10)]
 
-    for i in range(3):
+    # Inicializar as threads para os produtores e consumidores
+    for i in range(10):
         produtores[i].start()
         consumidores[i].start()
 
