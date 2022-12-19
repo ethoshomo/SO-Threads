@@ -84,18 +84,19 @@ def main(scr):
     scr.refresh()
     scr.erase()
 
-    # Criando um objeto com um bloco de clientes
+    # Inicializa a primeira thread de produtor (clientes)
     Thread(target=produtor, daemon=True).start()
     time.sleep(3)
 
     produtores = [Thread(target=produtor, daemon=True) for _ in range(10)]
     consumidores = [Thread(target=consumidor, daemon=True) for _ in range(10)]
 
-    # Inicializar as threads para os produtores e consumidores
+    # Inicializar as threads para os produtores (clientes) e consumidores (funcionarios)
     for i in range(10):
         produtores[i].start()
         consumidores[i].start()
 
+    # Desenha o funcionamento na tela enquanto menos de 50 clientes terminarem de ser atendidos
     while True:
         if clientes_finalizados >= 50:
             return 0
@@ -106,6 +107,7 @@ def main(scr):
 
 
 if __name__ == "__main__":
+    # Verifica se o tamanho da tela é adequado para executar o programa
     if wrapper(main) == -1:
         print("Tamanho de Terminal insuficiente, por favor expanda a sua janela para visualizar o programa.")
     else:
