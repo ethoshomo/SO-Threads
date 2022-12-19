@@ -1,6 +1,6 @@
 # SO-Threads - Sistema de Posto de Combustível
 
-Trabalho Final apresentado à disciplina de Sistemas Operacionais (SO) ministrada pelo docente Rodolfo Ipolito Meneguette. 
+Trabalho Final apresentado à disciplina de Sistemas Operacionais (SO) do curso de Ciência da Computação da Universidade de São Paulo (USP), a qual foi ministrada pelo docente Rodolfo Ipolito Meneguette. 
 
 # Grupo
 O trabalho foi realizado em grupo de quatro pessoas:
