@@ -72,7 +72,9 @@ def draw(scr):
     Desenha na tela usando o módulo Curses uma sequência de tabelas contendo a quantidade de clientes em espera,
     bombas disponíveis e clientes já atendidos, em tempo real.
     """
-    render(scr, [(clientes, "Clientes Esperando"), (bombas, "Bombas Disponiveis"), (clientes_finalizados, "Clientes Finalizados")])
+    render(scr, [(clientes, numero_clientes, "Clientes Esperando"),
+                 (bombas, numero_bombas, "Bombas Disponiveis"),
+                 (clientes_finalizados, clientes_finalizados, f"Clientes Finalizados - ({clientes_finalizados})")])
 
 
 def main(scr):
@@ -105,8 +107,9 @@ if __name__ == "__main__":
     if wrapper(main) == -1:
         print("Tamanho de Terminal insuficiente, por favor expanda a sua janela para visualizar o programa.")
     else:
+        print("******************* POSTO DE COMBUSTIVEL *******************")
         print("Total de clientes atendidos durante o expediente:", clientes_finalizados, end="\n\n")
         print("Estado Final:\n")
-        print(make_block((clientes, "Clientes Esperando")))
-        print(make_block((bombas, "Bombas Disponiveis")))
-        print(make_block((clientes_finalizados, "Clientes Finalizados")))
+        print(make_block((clientes, numero_clientes, "Clientes Esperando")))
+        print(make_block((bombas, numero_bombas, "Bombas Disponiveis")))
+        print(make_block((clientes_finalizados, clientes_finalizados, f"Clientes Finalizados - ({clientes_finalizados})")))
