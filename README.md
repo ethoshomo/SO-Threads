@@ -3,7 +3,7 @@ Trabalho Final apresentado à disciplina de Sistemas Operacionais (SO) do curso 
 
 # Grupo
 O trabalho foi realizado em um grupo de quatro pessoas:
-* Carlos Filipe de Castro lemos
+* Carlos Filipe de Castro Lemos
 * Gabriel Natal Coutinho
 * João Gabriel Sasseron Roberto Amorim
 * Rafael Zimmer
