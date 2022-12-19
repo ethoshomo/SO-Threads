@@ -1,97 +1,93 @@
 import time
-from threading import *
-import random
+from threading import Semaphore, Thread
+from curses import wrapper
+
+from draw import norm, render
 
 """Variáveis do Posto de Combustíveis"""
 controle = -9           # É só para alterar a numeração de clientes em cada bloco.
-numero_bombas = 5       # Quantas threads poderão ser usadas
-numero_clientes = 8     # Quantos clientes são produzidos por blocos
+numero_bombas = 5  # Quantas threads poderão ser usadas
+numero_clientes = 8  # Quantos clientes são produzidos por blocos
 
 """Criação de semáforos"""
-semaforo_faltantes = Semaphore(numero_clientes)    # Processos que ainda faltam produzir
-semaforo_disponiveis_consumidor = Semaphore(0)     # Processos disponíveis ao consumidor
-ocupacao_regiao_critica = Semaphore(numero_bombas) # Trava de uso da região crítica.
+clientes_esperando = Semaphore(numero_clientes)  # Processos que ainda faltam produzir
+clientes_abastecendo = Semaphore(0)  # Processos disponíveis ao consumidor
+bombas_disponiveis = Semaphore(numero_bombas)  # Trava de uso da região crítica.
 
 """Lista reservada para guardar os clientes"""
-clientes = []
+clientes = 0
+clientes_finalizados = 0
+bombas = numero_bombas
 
 
-def auxiliar_numeros_aleatorios(a: int, b: int) -> float():
-    """ Função auxiliar que gera números
-    aleatórios no programa. Intervalo: [a,b]
-    @param a: valor mínimo
-    @param b: valor maximo. """
-    return a + (b - a) * random.random()
-
-
-def produtora_clientes() -> None:
+def produtor() -> None:
     """ Função produtora por gerar clientes no sistema em
     tempos não regulares"""
 
     global controle
+    global clientes
     controle += 10
 
     i = 1 * controle
-    while i < 10*numero_clientes:
-        print(f'O consumidor {i} acabou de chegar.')
-        semaforo_faltantes.acquire()
-        ocupacao_regiao_critica.acquire()
+    while i < 10 * numero_clientes:
+        # print(f'O consumidor {i} acabou de chegar.')
+        clientes_esperando.acquire()
+        bombas_disponiveis.acquire()
 
-        clientes.append(i)
-        time.sleep(auxiliar_numeros_aleatorios(1, 2))
+        time.sleep(abs(norm(2, 2)))
+        clientes += 1
 
-        ocupacao_regiao_critica.release()
-        semaforo_disponiveis_consumidor.release()
+        bombas_disponiveis.release()
+        clientes_abastecendo.release()
 
         i += 1
 
-def consumidora_atendimento() -> None:
+
+def consumidor() -> None:
     """Função consumidora de modo que atende
     os interesses do cliente e o manda embora."""
 
+    global bombas
+    global clientes
+    global clientes_finalizados
+
     while True:
-        semaforo_disponiveis_consumidor.acquire()
-        ocupacao_regiao_critica.acquire()
+        clientes_abastecendo.acquire()
+        bombas_disponiveis.acquire()
 
-        atendimento = clientes.pop(0)
-        print(f'O cliente {atendimento} está sendo atendido')
-        time.sleep(auxiliar_numeros_aleatorios(2, 8))
-        print(f'O cliente {atendimento} está finalizado.')
+        bombas -= 1
+        clientes -= 1
+        time.sleep(abs(norm(1, 1)))
 
-        ocupacao_regiao_critica.release()
-        semaforo_faltantes.release()
+        bombas_disponiveis.release()
+        clientes_esperando.release()
+
+        bombas += 1
+        clientes_finalizados += 1
+
+def draw(scr):
+    render(scr, [(clientes, "Clientes Esperando"), (bombas, "Bombas Disponiveis"), (clientes_finalizados, "Clientes Finalizados")])
+
+
+def main(scr):
+    scr.addstr(0, 0, "O posto de combustível acaba de abrir.\n")
+    scr.refresh()
+    scr.erase()
+
+    # Criando um objeto com um bloco de clientes
+    Thread(target=produtor).start()
+    time.sleep(3)
+
+    produtores = [Thread(target=produtor) for _ in range(3)]
+    consumidores = [Thread(target=consumidor) for _ in range(3)]
+
+    for i in range(3):
+        produtores[i].start()
+        consumidores[i].start()
+
+    while True:
+        draw(scr)
 
 
 if __name__ == "__main__":
-
-    print("O posto de combustível acaba de abrir.\n")
-
-    # Criando um objeto com um bloco de clientes
-    thread_clientes = Thread(target=produtora_clientes)
-    thread_clientes.start()
-
-    time.sleep(3)
-
-    # Criando um objeto com um bloco de clientes
-    thread_consumidora = Thread(target=consumidora_atendimento)
-    thread_consumidora.start()
-
-    # Criando um objeto com um bloco de clientes
-    thread_clientes = Thread(target=produtora_clientes)
-    thread_clientes.start()
-
-    # Criando um objeto com um bloco de clientes
-    thread_consumidora = Thread(target=consumidora_atendimento)
-    thread_consumidora.start()
-
-    # Criando um objeto com um bloco de clientes
-    thread_consumidora = Thread(target=consumidora_atendimento)
-    thread_consumidora.start()
-
-    # Criando um objeto com um bloco de clientes
-    thread_clientes = Thread(target=produtora_clientes)
-    thread_clientes.start()
-
-    # Criando um objeto com um bloco de clientes
-    thread_consumidora = Thread(target=consumidora_atendimento)
-    thread_consumidora.start()
+    wrapper(main)
