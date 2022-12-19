@@ -21,18 +21,21 @@ bombas = numero_bombas
 
 def produtor() -> None:
     """
-    Função produtora que incrementa a quantidade de clientes esperando por bombas para utilizarem ao longo do tempo.
-    É esperado que chegue um novo cliente de um em um segundo.
+    Função produtora que incrementa a quantidade de clientes esperando por bombas para utilizarem temporal.
+    É esperado que chegue um novo cliente a cada um segundo.
     """
     global clientes
 
     while True:
+        # Caso haja espaço para espera de novos clientes, e existam bombas que possam ser usados, entrar no espaço
+        # crítico de entrada de novos clientes.
         clientes_esperando.acquire()
         bombas_disponiveis.acquire()
 
-        time.sleep(abs(norm(1, 2))) # Média de 1 segundo, com desvio padrão de 2 segundos
+        time.sleep(abs(norm(1, 2)))  # Média de 1 segundo, com desvio padrão de 2 segundos
         clientes += 1
 
+        # Caso um novo cliente entre em espera, contabilizá-lo e enviá-lo a uma bomba quando possível.
         bombas_disponiveis.release()
         clientes_abastecendo.release()
 
@@ -49,7 +52,6 @@ def consumidor() -> None:
     global clientes_finalizados
 
     while True:
-
         # Caso haja bombas disponíveis, entrar na zona crítica (de abastecimento)
         # O tempo de abastecimento médio é em torno de 4s
         clientes_abastecendo.acquire()
@@ -57,7 +59,7 @@ def consumidor() -> None:
 
         bombas -= 1
         clientes -= 1
-        time.sleep(abs(norm(4, 1))) # Média de 4 segundos, com desvio padrão de 1 segundo
+        time.sleep(abs(norm(4, 1)))  # Média de 4 segundos, com desvio padrão de 1 segundo
 
         # Após a realização do abastecimento, liberar a bomba e contabilizar o cliente finalizado
         clientes_finalizados += 1
@@ -112,4 +114,5 @@ if __name__ == "__main__":
         print("Estado Final:\n")
         print(make_block((clientes, numero_clientes, "Clientes Esperando")))
         print(make_block((bombas, numero_bombas, "Bombas Disponiveis")))
-        print(make_block((clientes_finalizados, clientes_finalizados, f"Clientes Finalizados - ({clientes_finalizados})")))
+        print(make_block(
+            (clientes_finalizados, clientes_finalizados, f"Clientes Finalizados - ({clientes_finalizados})")))
