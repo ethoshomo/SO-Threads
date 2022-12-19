@@ -9,9 +9,7 @@ O trabalho foi realizado em grupo de quatro pessoas:
 * Rafael Zimmer
 
 # Especificações e Descrições
-As especificações e descrições do trabalho podem ser encontradas no arquivo PDF descritivo do trabalho, que se encontra disponível nesse respositório. 
+As especificações e descrições do trabalho podem ser encontradas nesse respositório, especificamente no arquivo PDF descritivo do trabalho. Nesse arquivo, existem explicações das características técnicas empregadas para a implementação do sistema, bem como indicações de quais os requisitos e as formas de executar o programa.
 
-Nesse arquivo, existem características técnicas empregadas para a implementação do sistema, bem como há indica-se quais os requisitos e as formas de executar o programa.
-
-# Video
+# Video de Apresentação
 O video de apresentação do trabalho encontra-se disponível na pasta "Video" deste repositório.
